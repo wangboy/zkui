@@ -78,4 +78,14 @@ public class LeafBean implements Comparable<LeafBean> {
     public int compareTo(LeafBean o) {
         return (this.path + this.name).compareTo((o.path + o.name));
     }
+
+    @Override
+    public String toString() {
+        return "LeafBean{" +
+                "path='" + path + '\'' +
+                ", name='" + name + '\'' +
+                ", value=" + Arrays.toString(value) +
+                ", strValue='" + strValue + '\'' +
+                '}';
+    }
 }

@@ -1,38 +1,23 @@
 /**
- *
  * Copyright (c) 2014, Deem Inc. All Rights Reserved.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
  */
 package com.deem.zkui.utils;
 
 import com.deem.zkui.vo.LeafBean;
 import com.deem.zkui.vo.ZKNode;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Id;
 import org.apache.zookeeper.data.Stat;
@@ -41,6 +26,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.*;
 
 public enum ZooKeeperUtil {
 
@@ -92,7 +80,7 @@ public enum ZooKeeperUtil {
         ArrayList<ACL> newDefault = new ArrayList<>();
         try {
             JSONArray acls = (JSONArray) ((JSONObject) new JSONParser().parse(jsonAcl)).get("acls");
-            for (Iterator it = acls.iterator(); it.hasNext();) {
+            for (Iterator it = acls.iterator(); it.hasNext(); ) {
                 JSONObject acl = (JSONObject) it.next();
                 String scheme = ((String) acl.get("scheme")).trim();
                 String id = ((String) acl.get("id")).trim();
@@ -261,10 +249,19 @@ public enum ZooKeeperUtil {
                     boolean isFolder = subChildren != null && !subChildren.isEmpty();
                     if (isFolder) {
                         folders.add(child);
-                    } else {
-                        String childPath = getNodePath(path, child);
+                    }
+
+
+                    //else {
+                    String childPath = getNodePath(path, child);
+                    LeafBean nodeValue = this.getNodeValue(zk, path, childPath, child, authRole);
+
+                    if (!isFolder ||
+                            (nodeValue.getValue() != null && nodeValue.getValue().length > 0)) {
                         leaves.add(this.getNodeValue(zk, path, childPath, child, authRole));
                     }
+
+                    //}
 
                 }
 
